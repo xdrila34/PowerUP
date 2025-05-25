@@ -11,6 +11,234 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" /> <!-- https://getbootstrap.com/ -->
     <link href="fontawesome/css/all.min.css" rel="stylesheet" /> <!-- https://fontawesome.com/ -->
     <link href="css/templatemo-diagoona.css" rel="stylesheet" />
+    
+    <!-- Chatbot Styles -->
+    <style>
+        /* Chatbot Widget Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+        }
+
+        .chatbot-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            border: 1px solid #e9ecef;
+            margin-left: 8px;
+            color: #2c3e50;
+        }
+
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+        }
+
+        .bot-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .bot-avatar svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .chatbot-input-area {
+            padding: 16px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .chatbot-input-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chatbot-input:focus {
+            border-color: #007bff;
+        }
+
+        .chatbot-send {
+            background: #007bff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .chatbot-send:hover {
+            background: #0056b3;
+        }
+
+        .chatbot-send svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin-left: 40px;
+            margin-bottom: 12px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #007bff;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-window {
+                width: 300px;
+                height: 450px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="tm-container">
@@ -87,9 +315,206 @@
         </div>
     </div>
 
+    <!-- Chatbot Widget -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" id="chatbot-toggle">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+        </button>
+
+        <div class="chatbot-window" id="chatbot-window">
+            <div class="chatbot-header">
+                <h3>PowerUP Assistant</h3>
+                <button class="chatbot-close" id="chatbot-close">&times;</button>
+            </div>
+
+            <div class="chatbot-messages" id="chatbot-messages">
+                <div class="message bot">
+                    <div class="bot-avatar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        Ready to boost your PC's performance? I can help you get started with our PowerUP service! You can order through Fiverr or contact us directly. What would you like to know?
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="chatbot-input-area">
+                <div class="chatbot-input-container">
+                    <input type="text" class="chatbot-input" id="chatbot-input" placeholder="Type your message...">
+                    <button class="chatbot-send" id="chatbot-send">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.backstretch.min.js"></script>
     <script src="js/templatemo-script.js"></script>
+    
+    <!-- Chatbot JavaScript -->
+    <script>
+        class PowerUPChatbot {
+            constructor() {
+                this.isOpen = false;
+                this.messages = [];
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.setupKeyboardShortcuts();
+            }
+
+            bindEvents() {
+                const toggle = document.getElementById('chatbot-toggle');
+                const close = document.getElementById('chatbot-close');
+                const send = document.getElementById('chatbot-send');
+                const input = document.getElementById('chatbot-input');
+
+                toggle.addEventListener('click', () => this.toggleChat());
+                close.addEventListener('click', () => this.closeChat());
+                send.addEventListener('click', () => this.sendMessage());
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+            }
+
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'k') {
+                        e.preventDefault();
+                        this.toggleChat();
+                    }
+                });
+            }
+
+            toggleChat() {
+                const window = document.getElementById('chatbot-window');
+                this.isOpen = !this.isOpen;
+                window.style.display = this.isOpen ? 'flex' : 'none';
+                
+                if (this.isOpen) {
+                    document.getElementById('chatbot-input').focus();
+                }
+            }
+
+            closeChat() {
+                const window = document.getElementById('chatbot-window');
+                this.isOpen = false;
+                window.style.display = 'none';
+            }
+
+            async sendMessage() {
+                const input = document.getElementById('chatbot-input');
+                const message = input.value.trim();
+                
+                if (!message) return;
+
+                this.addMessage(message, 'user');
+                input.value = '';
+                
+                this.showTyping();
+                
+                try {
+                    const response = await this.getAIResponse(message);
+                    this.hideTyping();
+                    this.addMessage(response, 'bot');
+                } catch (error) {
+                    this.hideTyping();
+                    this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+                }
+            }
+
+            addMessage(content, sender) {
+                const messagesContainer = document.getElementById('chatbot-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                if (sender === 'bot') {
+                    messageDiv.innerHTML = `
+                        <div class="bot-avatar">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <div class="message-content">${content}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+                }
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            showTyping() {
+                document.getElementById('typing-indicator').style.display = 'block';
+                const messagesContainer = document.getElementById('chatbot-messages');
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            hideTyping() {
+                document.getElementById('typing-indicator').style.display = 'none';
+            }
+
+            async getAIResponse(message) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+                
+                const responses = this.getPredefinedResponses();
+                const lowerMessage = message.toLowerCase();
+                
+                // Simple keyword matching
+                for (const [keywords, response] of responses) {
+                    if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+                        return response;
+                    }
+                }
+                
+                return "I'm here to help you get started with PowerUP! You can order our service through Fiverr or contact us directly. What specific information do you need to get started?";
+            }
+
+            getPredefinedResponses() {
+                return [
+                    [['hello', 'hi', 'hey', 'good morning', 'good afternoon'], 'Hello! Ready to boost your PC\'s performance? I can help you get started with our PowerUP service. You can order through Fiverr or contact us directly. What would you like to know?'],
+                    [['fiverr', 'gig', 'order'], 'Great choice! Our Fiverr gig offers the complete PowerUP optimization service. Just click the Fiverr logo on this page or visit: https://www.fiverr.com/xdrilon/powerup-your-coputers-preformance. The process is simple and secure through Fiverr\'s platform.'],
+                    [['price', 'cost', 'how much', 'pricing'], 'Our Fiverr gig pricing varies by service level: Basic optimization starts at $39.99, Standard with gaming optimization at $79.99, and Premium with full optimization and support at $99.99. All packages include our satisfaction guarantee!'],
+                    [['how to order', 'buy', 'purchase', 'get started'], 'Ordering is easy! You have two options: 1) Click the Fiverr logo on this page to go directly to our gig, or 2) Contact us directly for custom arrangements. The Fiverr option is fastest and most secure for most customers.'],
+                    [['contact', 'direct contact', 'email'], 'For direct contact outside of Fiverr, you can reach us at support@powerup.com or through our website contact form. However, ordering through Fiverr provides the best protection and fastest service for most customers.'],
+                    [['process', 'how it works', 'what happens'], 'After you order: 1) We\'ll contact you within 24 hours, 2) Schedule a convenient time for remote optimization, 3) You can watch us work on your PC in real-time, 4) Complete optimization typically takes 2-4 hours, 5) You\'ll see immediate performance improvements!'],
+                    [['remote', 'safe', 'security'], 'Yes, our remote service is completely safe! We use secure, encrypted connections and you can watch everything we do in real-time. We never access personal files or install anything without your permission. Your privacy and security are our top priorities.'],
+                    [['guarantee', 'refund', 'satisfaction'], 'We offer a 30-day satisfaction guarantee! If you\'re not happy with the performance improvement, we\'ll work with you to resolve any issues or provide a full refund. When you order through Fiverr, you also get their buyer protection.'],
+                    [['time', 'how long', 'duration'], 'Most optimizations take 2-4 hours depending on your system\'s condition. Gaming PC optimizations may take up to 4-6 hours due to the extensive tweaking involved. We work around your schedule and you can use your computer during the process.'],
+                    [['requirements', 'what do i need'], 'You just need: 1) A Windows PC that can connect to the internet, 2) About 2-4 hours when you\'re available to supervise, 3) Administrator access to your computer. That\'s it! We handle everything else remotely.'],
+                    [['fiverr vs direct', 'which option'], 'I recommend ordering through Fiverr because: 1) Secure payment processing, 2) Buyer protection, 3) Clear service packages, 4) Review system, 5) Faster response times. Direct contact is better for custom enterprise solutions or special requirements.'],
+                    [['thank', 'thanks'], 'You\'re welcome! Ready to give your PC the performance boost it deserves? Click that Fiverr logo to get started, or feel free to ask any other questions. I\'m here to help make the process as smooth as possible!']
+                ];
+            }
+        }
+
+        // Initialize the chatbot when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PowerUPChatbot();
+        });
+    </script>
 </body>
 </html>

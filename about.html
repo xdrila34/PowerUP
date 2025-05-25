@@ -13,6 +13,233 @@
     <link href="fontawesome/css/all.min.css" rel="stylesheet" /> <!-- https://fontawesome.com/ -->
     <link href="css/templatemo-diagoona.css" rel="stylesheet" />
 
+    <!-- Chatbot Styles -->
+    <style>
+        /* Chatbot Widget Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+        }
+
+        .chatbot-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            border: 1px solid #e9ecef;
+            margin-left: 8px;
+            color: #2c3e50;
+        }
+
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+        }
+
+        .bot-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .bot-avatar svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .chatbot-input-area {
+            padding: 16px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .chatbot-input-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chatbot-input:focus {
+            border-color: #007bff;
+        }
+
+        .chatbot-send {
+            background: #007bff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .chatbot-send:hover {
+            background: #0056b3;
+        }
+
+        .chatbot-send svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin-left: 40px;
+            margin-bottom: 12px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #007bff;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-window {
+                width: 300px;
+                height: 450px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -114,9 +341,206 @@
         </div>
     </div>
 
+    <!-- Chatbot Widget -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" id="chatbot-toggle">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+        </button>
+
+        <div class="chatbot-window" id="chatbot-window">
+            <div class="chatbot-header">
+                <h3>PowerUP Assistant</h3>
+                <button class="chatbot-close" id="chatbot-close">&times;</button>
+            </div>
+
+            <div class="chatbot-messages" id="chatbot-messages">
+                <div class="message bot">
+                    <div class="bot-avatar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        Hi! I'm here to tell you more about PowerUP and our mission to unlock your computer's hidden performance. What would you like to know about us?
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="chatbot-input-area">
+                <div class="chatbot-input-container">
+                    <input type="text" class="chatbot-input" id="chatbot-input" placeholder="Type your message...">
+                    <button class="chatbot-send" id="chatbot-send">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.backstretch.min.js"></script>
     <script src="js/templatemo-script.js"></script>
+    
+    <!-- Chatbot JavaScript -->
+    <script>
+        class PowerUPChatbot {
+            constructor() {
+                this.isOpen = false;
+                this.messages = [];
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.setupKeyboardShortcuts();
+            }
+
+            bindEvents() {
+                const toggle = document.getElementById('chatbot-toggle');
+                const close = document.getElementById('chatbot-close');
+                const send = document.getElementById('chatbot-send');
+                const input = document.getElementById('chatbot-input');
+
+                toggle.addEventListener('click', () => this.toggleChat());
+                close.addEventListener('click', () => this.closeChat());
+                send.addEventListener('click', () => this.sendMessage());
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+            }
+
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'k') {
+                        e.preventDefault();
+                        this.toggleChat();
+                    }
+                });
+            }
+
+            toggleChat() {
+                const window = document.getElementById('chatbot-window');
+                this.isOpen = !this.isOpen;
+                window.style.display = this.isOpen ? 'flex' : 'none';
+                
+                if (this.isOpen) {
+                    document.getElementById('chatbot-input').focus();
+                }
+            }
+
+            closeChat() {
+                const window = document.getElementById('chatbot-window');
+                this.isOpen = false;
+                window.style.display = 'none';
+            }
+
+            async sendMessage() {
+                const input = document.getElementById('chatbot-input');
+                const message = input.value.trim();
+                
+                if (!message) return;
+
+                this.addMessage(message, 'user');
+                input.value = '';
+                
+                this.showTyping();
+                
+                try {
+                    const response = await this.getAIResponse(message);
+                    this.hideTyping();
+                    this.addMessage(response, 'bot');
+                } catch (error) {
+                    this.hideTyping();
+                    this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+                }
+            }
+
+            addMessage(content, sender) {
+                const messagesContainer = document.getElementById('chatbot-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                if (sender === 'bot') {
+                    messageDiv.innerHTML = `
+                        <div class="bot-avatar">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <div class="message-content">${content}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+                }
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            showTyping() {
+                document.getElementById('typing-indicator').style.display = 'block';
+                const messagesContainer = document.getElementById('chatbot-messages');
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            hideTyping() {
+                document.getElementById('typing-indicator').style.display = 'none';
+            }
+
+            async getAIResponse(message) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+                
+                const responses = this.getPredefinedResponses();
+                const lowerMessage = message.toLowerCase();
+                
+                // Simple keyword matching
+                for (const [keywords, response] of responses) {
+                    if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+                        return response;
+                    }
+                }
+                
+                return "I'd love to tell you more about PowerUP! We're passionate about helping people unlock their computer's hidden performance potential. What specific aspect would you like to know more about?";
+            }
+
+            getPredefinedResponses() {
+                return [
+                    [['hello', 'hi', 'hey', 'good morning', 'good afternoon'], 'Hello! Welcome to PowerUP. I\'m here to tell you all about our mission and what makes us different. What would you like to know?'],
+                    [['about', 'who are you', 'what is powerup'], 'PowerUP is a PC optimization service dedicated to unlocking the hidden performance potential in your computer. We believe everyone deserves to experience their device running at its best, whether it\'s for gaming, work, or everyday use.'],
+                    [['why', 'why choose', 'different', 'competitors'], 'What makes PowerUP different? We offer genuine performance improvements at lower fees than competitors. We don\'t gatekeep knowledge - we share what we do and why it works. Our results speak for themselves, and we believe in transparency and fair pricing.'],
+                    [['mission', 'started', 'why started'], 'I started PowerUP because I noticed most people don\'t realize their devices can run much better. Those who do know how to optimize often gatekeep this knowledge. I wanted to make PC optimization accessible and affordable for everyone.'],
+                    [['safe', 'safety', 'secure', 'trust'], 'Safety is our top priority. Everything we use is trusted, tested, and safe. We only use legitimate optimization techniques and reputable software. Your data and system security are never compromised during our optimization process.'],
+                    [['results', 'proof', 'evidence'], 'Our results speak for themselves! We have documented performance improvements showing significant speed increases, better gaming performance, and overall system responsiveness. You can check out our results page to see real before-and-after comparisons.'],
+                    [['performance', 'unlock', 'hidden power'], 'Most computers have untapped performance potential! Through registry optimization, startup management, driver updates, and system cleaning, we can unlock 20-60% performance improvements depending on your system\'s current state.'],
+                    [['gaming', 'gaming computer'], 'Gaming computers especially benefit from our optimization! We can unlock significant FPS improvements, reduce lag, optimize graphics settings, and ensure your system runs games at peak performance. Gaming PCs often have the most hidden potential.'],
+                    [['price', 'cost', 'affordable', 'fee'], 'We pride ourselves on offering lower fees than competitors while delivering superior results. Our pricing is transparent and fair - we believe great PC performance shouldn\'t break the bank. Contact us for specific pricing based on your needs.'],
+                    [['how', 'process', 'what do you do'], 'Our process includes comprehensive system analysis, junk file removal, registry cleaning, startup optimization, driver updates, and performance testing. We use only trusted tools and techniques, and we can work remotely so you can watch the improvements happen.'],
+                    [['contact', 'get started', 'buy'], 'Ready to unlock your PC\'s potential? You can reach us through our "Buy It" page, or contact us directly. We offer both remote and on-site services to fit your needs and schedule.'],
+                    [['thank', 'thanks'], 'You\'re very welcome! I\'m passionate about helping people understand what PowerUP can do for them. If you have any other questions about our mission, process, or results, feel free to ask!']
+                ];
+            }
+        }
+
+        // Initialize the chatbot when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PowerUPChatbot();
+        });
+    </script>
 </body>
 </html>
