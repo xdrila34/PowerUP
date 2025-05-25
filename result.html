@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PowerUP</title>
+    <link rel="icon" type="image/x-icon" href="/img/teti.png">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    img {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      pointer-events: none; /* disables dragging */
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
+    /* Prevent right-click save */
+    body {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+  <script>
+    // Disable right-click context menu
+    window.addEventListener('contextmenu', e => e.preventDefault());
+  </script>
+</head>
+<body>
+  <img src="img/result/RESULT.jpg"alt="Background Image">
+</body>
+</html>
